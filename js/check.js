@@ -8,7 +8,6 @@ function getMessage(a, b) {
             return 'Переданное GIF-изображение не анимировано';
         }
     }
-
     else if (typeof a == 'number') {
         return 'Переданное SVG-изображение содержит ' + a + ' объектов и ' + b * 4 + ' аттрибутов';
     }
@@ -32,7 +31,7 @@ function arraySum(array) {
 function arrayMultiple(array1, array2) {
     var product = 0;
     for (var i = 0; i < array1.length; i++) {
-        product += array1[i]*array2[i];
+        product += array1[i] * array2[i];
     }
     return product;
 };
