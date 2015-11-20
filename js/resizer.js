@@ -116,13 +116,13 @@
       //this._ctx.fillRect(displX, displY, this._container.width, this._container.height * 0.125 - this._ctx.lineWidth);
       //this._ctx.fillRect(displX, 0 , this._container.width, this._container.height * 0.125 - this._ctx.lineWidth);
       this._ctx.fillRect(
-        this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2, 
+        this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2,
         -this._container.height,
         this._container.width,
         this._container.height * 2);
 
       this._ctx.fillRect(
-        -this._resizeConstraint.side / 2 - this._ctx.lineWidth, 
+        -this._resizeConstraint.side / 2 - this._ctx.lineWidth,
         -this._container.height,
         -this._container.width,
         this._container.height * 2);
@@ -157,13 +157,13 @@
       for (var j = 0; j <= Math.floor((this._resizeConstraint.side - this._ctx.lineWidth / 2) / 12); j++) {
         this._ctx.moveTo(-this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2,
        -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2 + j * 12);
-      this._ctx.arc(-this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2,
+        this._ctx.arc(-this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2,
        -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2 + j * 12, 3, 0, Math.PI * 2, true);
-      this._ctx.moveTo(this._resizeConstraint.side / 2 - this._ctx.lineWidth,
+        this._ctx.moveTo(this._resizeConstraint.side / 2 - this._ctx.lineWidth,
        -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2 + j * 12);
-      this._ctx.arc(this._resizeConstraint.side / 2 - this._ctx.lineWidth,
+        this._ctx.arc(this._resizeConstraint.side / 2 - this._ctx.lineWidth,
        -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2 + j * 12, 3, 0, Math.PI * 2, true);
-    }
+      }
       this._ctx.fill();
 
       this._ctx.fillStyle = 'rgb(255, 255, 255)';
