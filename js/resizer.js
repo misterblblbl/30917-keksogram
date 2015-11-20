@@ -109,15 +109,78 @@
       // Отрисовка изображения на холсте. Параметры задают изображение, которое
       // нужно отрисовать и координаты его верхнего левого угла.
       // Координаты задаются от центра холста.
+      
       this._ctx.drawImage(this._image, displX, displY);
-
       // Отрисовка прямоугольника, обозначающего область изображения после
       // кадрирования. Координаты задаются от центра.
-      this._ctx.strokeRect(
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
+      this._ctx.fillStyle = 'rgba(0,0,0, 0.8)';
+      //this._ctx.fillRect(displX, displY, this._container.width, this._container.height * 0.125 - this._ctx.lineWidth);
+      //this._ctx.fillRect(displX, 0 , this._container.width, this._container.height * 0.125 - this._ctx.lineWidth);
+      this._ctx.fillRect(
+        this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2, 
+        -this._container.height, 
+        this._container.width, 
+        this._container.height * 2);
+
+      this._ctx.fillRect(
+        -this._resizeConstraint.side / 2 - this._ctx.lineWidth, 
+        -this._container.height,
+        -this._container.width,
+        this._container.height * 2);
+
+      this._ctx.fillRect(
+        -this._resizeConstraint.side / 2 - this._ctx.lineWidth, 
+        -this._resizeConstraint.side / 2 - this._ctx.lineWidth, 
+        this._resizeConstraint.side + this._ctx.lineWidth / 2, 
+        -this._resizeConstraint.side / 2);
+
+      this._ctx.fillRect(
+        -this._resizeConstraint.side / 2 - this._ctx.lineWidth,
+        this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2,
+        this._resizeConstraint.side + this._ctx.lineWidth / 2,
+        this._container.height);
+
+      /*this._ctx.strokeRect(
+          -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2,
+          -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2,
           this._resizeConstraint.side - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2);
+          this._resizeConstraint.side - this._ctx.lineWidth / 2);*/
+
+      var width = this._resizeConstraint.side  / 2 + this._ctx.lineWidth / 2;
+      this._ctx.fillStyle = '#ffe753';
+      this._ctx.beginPath();
+
+      for (var i = 0; i <= Math.floor((this._resizeConstraint.side  / 2 - this._ctx.lineWidth / 2) / 6); i++) {
+        this._ctx.moveTo(-this._resizeConstraint.side  / 2 - this._ctx.lineWidth / 2 + i * 12,
+          -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2);
+        this._ctx.arc(-this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2 + i * 12,
+          -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2, 3, 0, Math.PI * 2, true);
+        this._ctx.moveTo(-this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2 + i * 12, 
+          this._resizeConstraint.side / 2 - this._ctx.lineWidth);
+        this._ctx.arc(-this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2 + i * 12, 
+          this._resizeConstraint.side / 2 - this._ctx.lineWidth, 3, 0, Math.PI * 2, true);
+      };
+      this._ctx.fill();
+
+      for (var j = 0; j <= Math.floor((this._resizeConstraint.side - this._ctx.lineWidth / 2) / 12); j++) {
+      this._ctx.moveTo(-this._resizeConstraint.side  / 2 - this._ctx.lineWidth / 2,
+       -this._resizeConstraint.side  / 2 - this._ctx.lineWidth / 2 + j * 12);
+      this._ctx.arc(-this._resizeConstraint.side  / 2 - this._ctx.lineWidth / 2,
+       -this._resizeConstraint.side  / 2 - this._ctx.lineWidth / 2 + j * 12, 3, 0, Math.PI*2, true);
+      this._ctx.moveTo(this._resizeConstraint.side  / 2 - this._ctx.lineWidth,
+       -this._resizeConstraint.side  / 2 - this._ctx.lineWidth / 2 + j * 12);
+      this._ctx.arc(this._resizeConstraint.side  / 2 - this._ctx.lineWidth,
+       -this._resizeConstraint.side  / 2 - this._ctx.lineWidth / 2 + j * 12, 3, 0, Math.PI*2, true);
+    }
+    this._ctx.fill();
+
+      this._ctx.fillStyle = 'rgb(255, 255, 255)';
+      this._ctx.font = '12pt Arial';
+      this._ctx.textAlign = 'center';
+      this._ctx.fillText(this._image.naturalWidth + ' x ' + this._image.naturalHeight, 
+      0, -this._resizeConstraint.side / 2 - this._ctx.lineWidth * 2);
+
+      //this._ctx.strokeRect();
 
       // Восстановление состояния канваса, которое было до вызова ctx.save
       // и последующего изменения системы координат. Нужно для того, чтобы
