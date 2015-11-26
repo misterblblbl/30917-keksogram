@@ -118,7 +118,7 @@
       var resizedSide = this._resizeConstraint.side;
       var outline = this._ctx.lineWidth;
       var containerHeight = this._container.height;
-      
+
       this._ctx.fillRect(
         resizedSide / 2 - outline / 2,
         -containerHeight,
@@ -146,8 +146,7 @@
       this._ctx.fillStyle = '#ffe753';
       this._ctx.beginPath();
 
-      var dotRadius = (resizedSide - outline) / Math.floor((resizedSide - outline) / 12)
-      console.log(resizedSide, outline, dotRadius)
+      var dotRadius = (resizedSide - outline) / Math.floor((resizedSide - outline) / 12);
 
       for (var i = 0; i <= (resizedSide - outline) / dotRadius; i++) {
         this._ctx.moveTo(-resizedSide / 2 - outline / 2 + i * dotRadius,
