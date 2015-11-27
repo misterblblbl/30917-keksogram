@@ -72,20 +72,28 @@
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    return true;
-  }
+    if (resizeX.value + resizeSize.value <= currentResizer._image.naturalWidth &&
+      resizeX.value + resizeSize.value <= currentResizer._image.naturalHeight) {
+      return true;
+    } else {
+    return false;
+    }
+  };
 
   /**
    * Форма загрузки изображения.
    * @type {HTMLFormElement}
    */
   var uploadForm = document.forms['upload-select-image'];
-
   /**
    * Форма кадрирования изображения.
    * @type {HTMLFormElement}
    */
   var resizeForm = document.forms['upload-resize'];
+  var resizeX = resizeForm['resize-x'];
+  var resizeY = resizeForm['resize-y'];
+  var resizeSize = resizeForm['resize-size'];
+  var resizeSubmit = resizeForm['resize-fwd'];
 
   /**
    * Форма добавления фильтра.
@@ -191,6 +199,30 @@
    * кропнутое изображение в форму добавления фильтра и показывает ее.
    * @param {Event} evt
    */
+  resizeForm.onchange = function() {
+    var textField = document.querySelectorAll('.upload-resize-controls input');
+    if(resizeFormIsValid()) {
+      resizeSubmit.disabled = false;
+      for (var i = 0; i < textField.length; i++){
+        textField[i].style.border = 'none';
+      };
+    } else {
+      resizeSubmit.disabled = true;
+      showError('Кадрирование не должно выходить за пределы исходного изображения');
+      for (var i = 0; i < textField.length; i++){
+        textField[i].style.border = '1px solid red';
+      };
+    }
+
+  };
+
+  function showError(message) {
+    var errorSpan = document.createElement('span');
+    var errorMessage = document.createTextNode(message);
+    errorSpan.setAttribute('style', 'position: absolute; bottom: -50px; color: red');
+    resizeForm.appendChild(errorMessage); 
+  }
+
   resizeForm.onsubmit = function(evt) {
     evt.preventDefault();
 
