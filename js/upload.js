@@ -203,9 +203,9 @@
     var textField = document.querySelectorAll('.upload-resize-controls input');
     if (resizeFormIsValid()) {
       resizeSubmit.disabled = false;
-      for (var i = 0; i < textField.length; i++){
+      for (var i = 0; i < textField.length; i++) {
         textField[i].style.border = 'none';
-      };
+      }
     } else {
       resizeSubmit.disabled = true;
       showError('Кадрирование не должно выходить за пределы исходного изображения');
