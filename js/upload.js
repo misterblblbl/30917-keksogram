@@ -72,12 +72,8 @@
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    if (resizeX.value + resizeSize.value <= currentResizer._image.naturalWidth &&
-      resizeY.value + resizeSize.value <= currentResizer._image.naturalHeight) {
-      return true;
-    } else {
-      return false;
-    }
+    return (resizeX.value + resizeSize.value <= currentResizer._image.naturalWidth &&
+      resizeY.value + resizeSize.value <= currentResizer._image.naturalHeight);
   }
 
   /**
@@ -194,23 +190,18 @@
     uploadForm.classList.remove('invisible');
   };
 
-  /**
-   * Обработка отправки формы кадрирования. Если форма валидна, экспортирует
-   * кропнутое изображение в форму добавления фильтра и показывает ее.
-   * @param {Event} evt
-   */
   resizeForm.onchange = function() {
     var textField = document.querySelectorAll('.upload-resize-controls input');
     if (resizeFormIsValid()) {
       resizeSubmit.disabled = false;
       for (var i = 0; i < textField.length; i++) {
-        textField[i].style.border = 'none';
+        textField[i].classList.remove('input-error');
       }
     } else {
       resizeSubmit.disabled = true;
       showError('Кадрирование не должно выходить за пределы исходного изображения');
       for (var j = 0; j < textField.length; j++) {
-        textField[j].style.border = '1px solid red';
+        textField[j].classList.add('input-error');
       }
     }
 
@@ -218,10 +209,16 @@
 
   function showError(message) {
     var errorSpan = document.createElement('span');
-    var errorMessage = document.createTextNode(message);
-    errorSpan.setAttribute('style', 'position: absolute; bottom: -50px; color: red');
-    resizeForm.appendChild(errorMessage);
+    errorSpan.innerHTML = message;
+    errorSpan.setAttribute('style', 'position: absolute; bottom: 60px; left: 10px; color: red');
+    resizeForm.appendChild(errorSpan);
   }
+
+  /**
+   * Обработка отправки формы кадрирования. Если форма валидна, экспортирует
+   * кропнутое изображение в форму добавления фильтра и показывает ее.
+   * @param {Event} evt
+   */
 
   resizeForm.onsubmit = function(evt) {
     evt.preventDefault();

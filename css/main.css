@@ -218,6 +218,10 @@ body {
   width: 3em;
 }
 
+.input-error {
+  outline: 1px solid red;
+}
+
 .upload-filter-controls {
   border: 0;
   bottom: 10px;
