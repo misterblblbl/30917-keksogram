@@ -72,13 +72,9 @@
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    if (resizeX.value + resizeSize.value <= currentResizer._image.naturalWidth &&
-      resizeX.value + resizeSize.value <= currentResizer._image.naturalHeight) {
-      return true;
-    } else {
-    return false;
-    }
-  };
+    return (resizeX.value + resizeSize.value <= currentResizer._image.naturalWidth &&
+      resizeY.value + resizeSize.value <= currentResizer._image.naturalHeight);
+  }
 
   /**
    * Форма загрузки изображения.
@@ -194,34 +190,35 @@
     uploadForm.classList.remove('invisible');
   };
 
-  /**
-   * Обработка отправки формы кадрирования. Если форма валидна, экспортирует
-   * кропнутое изображение в форму добавления фильтра и показывает ее.
-   * @param {Event} evt
-   */
   resizeForm.onchange = function() {
     var textField = document.querySelectorAll('.upload-resize-controls input');
-    if(resizeFormIsValid()) {
+    if (resizeFormIsValid()) {
       resizeSubmit.disabled = false;
-      for (var i = 0; i < textField.length; i++){
-        textField[i].style.border = 'none';
-      };
+      for (var i = 0; i < textField.length; i++) {
+        textField[i].classList.remove('input-error');
+      }
     } else {
       resizeSubmit.disabled = true;
       showError('Кадрирование не должно выходить за пределы исходного изображения');
-      for (var i = 0; i < textField.length; i++){
-        textField[i].style.border = '1px solid red';
-      };
+      for (var j = 0; j < textField.length; j++) {
+        textField[j].classList.add('input-error');
+      }
     }
 
   };
 
   function showError(message) {
     var errorSpan = document.createElement('span');
-    var errorMessage = document.createTextNode(message);
-    errorSpan.setAttribute('style', 'position: absolute; bottom: -50px; color: red');
-    resizeForm.appendChild(errorMessage); 
+    errorSpan.innerHTML = message;
+    errorSpan.setAttribute('style', 'position: absolute; bottom: 60px; left: 10px; color: red');
+    resizeForm.appendChild(errorSpan);
   }
+
+  /**
+   * Обработка отправки формы кадрирования. Если форма валидна, экспортирует
+   * кропнутое изображение в форму добавления фильтра и показывает ее.
+   * @param {Event} evt
+   */
 
   resizeForm.onsubmit = function(evt) {
     evt.preventDefault();
@@ -244,6 +241,18 @@
     filterForm.classList.add('invisible');
     resizeForm.classList.remove('invisible');
   };
+  function getCookieExpirationDate() {
+    var now = new Date();
+    var birthDay = 9;
+    var birthMonth = 5;
+    var lastBirthday;
+    if (now < new Date(now.getFullYear(), birthMonth, birthDay)) {
+      lastBirthday = new Date(now.getFullYear() - 1, birthMonth, birthDay);
+    } else {
+      lastBirthday = new Date(now.getFullYear(), birthMonth, birthDay);
+    }
+    return new Date(+now + +now - +lastBirthday);
+  }
 
   /**
    * Отправка формы фильтра. Возвращает в начальное состояние, предварительно
@@ -258,6 +267,7 @@
 
     filterForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
+    document.cookie = 'filter=' + filterImage.className.split(' ')[1] + '; expires=' + getCookieExpirationDate();
   };
 
   /**
@@ -285,6 +295,18 @@
     // состояние или просто перезаписывать.
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
   };
+
+  function getPreviousFilter() {
+    var previousFilter = docCookies.getItem('filter');
+    if (previousFilter) {
+      filterImage.className = 'filter-image-preview ' + previousFilter;
+      filterForm['upload-' + previousFilter].setAttribute('checked', 'checked');
+    }
+  }
+
+  window.addEventListener('load', function() {
+    getPreviousFilter();
+  });
 
   cleanupResizer();
   updateBackground();
