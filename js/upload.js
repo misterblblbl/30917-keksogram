@@ -243,13 +243,18 @@
   };
   function getCookieExpirationDate() {
     var now = new Date();
-    var birthDay = 9;
-    var birthMonth = 5;
+    var thisYear = now.getFullYear();
+    /* Дата рождения — 9 июня.
+    */
+    var birthDate = {
+      day: 9,
+      month: 5
+    };
     var lastBirthday;
-    if (now < new Date(now.getFullYear(), birthMonth, birthDay)) {
-      lastBirthday = new Date(now.getFullYear() - 1, birthMonth, birthDay);
+    if (now < new Date(thisYear, birthDate.month, birthDate.day)) {
+      lastBirthday = new Date(thisYear - 1, birthDate.month, birthDate.day);
     } else {
-      lastBirthday = new Date(now.getFullYear(), birthMonth, birthDay);
+      lastBirthday = new Date(thisYear, birthDate.month, birthDate.day);
     }
     return new Date(+now + +now - +lastBirthday);
   }
@@ -267,7 +272,7 @@
 
     filterForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
-    document.cookie = 'filter=' + filterImage.className.split(' ')[1] + '; expires=' + getCookieExpirationDate();
+    docCookies.setItem('filter', filterImage.className.split(' ')[1], getCookieExpirationDate());
   };
 
   /**
