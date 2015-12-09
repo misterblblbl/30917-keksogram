@@ -38,8 +38,8 @@ function getElementFromTemplate(data) {
   var imageLoadTimeout = setTimeout(function() {
     element.classList.add('.picture-load-failure');
   }, 1000);
-  
-  // Обработчик загрузки: 
+
+  // Обработчик загрузки:
   photo.onload = function() {
     clearTimeout(imageLoadTimeout);
     element.querySelector('img').src = data.url;
