@@ -30,25 +30,24 @@ function getElementFromTemplate(data) {
     element = template.children[0].cloneNode(true);
   }
 
-  // Создаем изображение, заменяет им уже находящееся в шаблоне
+  // Создаем изображение, заменяем им уже находящееся в шаблоне
   var photo = new Image(182, 182);
+  photo.src = data.url;
   image = element.querySelector('img');
   element.replaceChild(photo, image);
 
   var imageLoadTimeout = setTimeout(function() {
-    element.classList.add('.picture-load-failure');
+    element.classList.add('picture-load-failure');
   }, 1000);
 
   // Обработчик загрузки:
   photo.onload = function() {
     clearTimeout(imageLoadTimeout);
-    element.querySelector('img').src = data.url;
   };
   // Обработчик ошибки:
   photo.onerror = function() {
     element.classList.add('picture-load-failure');
   };
-  photo.src = data.url;
 
   // Добавляем количество лайков и комментариев
   element.querySelector('.picture-comments').textContent = data.comments;
