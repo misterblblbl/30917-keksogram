@@ -12,13 +12,9 @@ var firstFiltration = true;
 //Загружаем данные из файла и создаем блоки с фотографиями
 getPicturesData();
 
-// Показываем блок с фильтрами после того, как получили блоки с изображениями
-filtersContainer.classList.remove('hidden');
-
-var filters = document.querySelector('.filters');
 var activeFilter = 'filter-popular';
 
-filters.addEventListener('click', function(evt) {
+filtersContainer.addEventListener('click', function(evt) {
   var clickedFilter = evt.target;
   if (clickedFilter.classList.contains('filters-radio')) {
     setActiveFilter(clickedFilter.id);
@@ -29,17 +25,24 @@ filters.addEventListener('click', function(evt) {
 function getPicturesData() {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', 'data/pictures.json');
+  xhr.timeout = 10000;
+
+  //отобразить прелоудер на время загрузки файлв
   pictureContainer.classList.add('pictures-loading');
 
   xhr.onload = function(evt) {
-    pictureContainer.classList.remove('pictures-loading');
     var rawData = evt.target.response;
     var loadedData = JSON.parse(rawData);
     pictures = loadedData;
     renderPictures(loadedData);
+    //убрать прелоудер, когда файлы загрузятся
+    pictureContainer.classList.remove('pictures-loading');
   };
   xhr.timeout = 10000;
   xhr.onerror = function() {
+    if (pictureContainer.classList.contains('pictures-loading')) {
+      pictureContainer.classList.remove('pictures-loading');
+    }
     pictureContainer.classList.add('pictures-failure');
   };
   xhr.send();
@@ -54,6 +57,11 @@ function renderPictures(picturesToRender) {
     fragment.appendChild(element);
   });
   pictureContainer.appendChild(fragment);
+
+  if (filtersContainer.classList.contains('hidden')) {
+    // Показываем блок с фильтрами после того, как получили блоки с изображениями
+    filtersContainer.classList.remove('hidden');
+  }
 }
 
 // Получаем шаблон
@@ -107,7 +115,7 @@ function setActiveFilter(id) {
 
   switch (id) {
     case 'filter-new':
-      filteredPictures = filteredPictures.filter(selectLastThreeMonth);
+      filteredPictures = filteredPictures.filter(isOlderThanMonths);
       filteredPictures = filteredPictures.sort(function(a, b) {
         return b.date - a.date;
       });
@@ -127,11 +135,11 @@ function setActiveFilter(id) {
 
 }
 
-function selectLastThreeMonth(img) {
+function isOlderThanMonths(img) {
   var now = new Date();
-  var MILISECONDS_IN_THREE_MONTH = 3 * 30 * 24 * 60 * 60 * 1000;
-  var dateThreeMonthEarlier = new Date(+now - MILISECONDS_IN_THREE_MONTH);
+  var MILISECONDS_IN_SIX_MONTHS = 6 * 30 * 24 * 60 * 60 * 1000;
+  var dateSixMonthEarlier = new Date(now - MILISECONDS_IN_SIX_MONTHS);
   var pictureDate = new Date(img.date);
 
-  return +dateThreeMonthEarlier < +pictureDate;
+  return dateSixMonthEarlier < pictureDate;
 }
