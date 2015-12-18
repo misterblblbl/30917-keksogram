@@ -2,13 +2,35 @@
 
 // Находим контейнер для изображений
 var pictureContainer = document.querySelector('.pictures');
-
-// Прячем блок с фильтрами
 var filtersContainer = document.querySelector('.filters');
-filtersContainer.classList.add('hidden');
 var pictures = [];
+var currentFilter = 'filter-all';
 var firstFiltration = true;
 var lastMonths = 6;
+var currentPage = 0;
+var PAGE_SIZE = 12;
+var filteredPictures = [];
+var scrollTimeout;
+
+// Прячем блок с фильтрами
+filtersContainer.classList.add('hidden');
+
+function renderNewPages() {
+  //получаем размер и координаты контейнера
+  var containerCoordinates = pictureContainer.getBoundingClientRect();
+    //высота вьюпорта
+  var viewportSize = window.innerHeight;
+  if (containerCoordinates.bottom <= viewportSize) {
+    if (currentPage < Math.ceil(filteredPictures.length / PAGE_SIZE)) {
+      renderPictures(filteredPictures, ++currentPage);
+    }
+  }
+}
+
+window.addEventListener('scroll', function() {
+  clearTimeout(scrollTimeout);
+  scrollTimeout = setTimeout(renderNewPages(), 100);
+});
 
 //Загружаем данные из файла и создаем блоки с фотографиями
 getPicturesData();
@@ -35,7 +57,8 @@ function getPicturesData() {
     var rawData = evt.target.response;
     var loadedData = JSON.parse(rawData);
     pictures = loadedData;
-    renderPictures(loadedData);
+    setActiveFilter(currentFilter);
+    //renderPictures(loadedData);
     //убрать прелоудер, когда файлы загрузятся
     pictureContainer.classList.remove('pictures-loading');
   };
@@ -50,10 +73,16 @@ function getPicturesData() {
 }
 
 // Добавляем полученные из шаблона блоки с изображениями в контейнер
-function renderPictures(picturesToRender) {
-  pictureContainer.innerHTML = '';
+function renderPictures(picturesToRender, pageNumber, replace) {
+  if (replace) {
+    pictureContainer.innerHTML = '';
+  }
   var fragment = document.createDocumentFragment();
-  picturesToRender.forEach(function(picture) {
+  var from = pageNumber * PAGE_SIZE;
+  var to = from + PAGE_SIZE;
+  var pagePictures = picturesToRender.slice(from, to);
+
+  pagePictures.forEach(function(picture) {
     var element = getElementFromTemplate(picture);
     fragment.appendChild(element);
   });
@@ -112,7 +141,7 @@ function setActiveFilter(id) {
     }
   }
 
-  var filteredPictures = pictures.slice(0);
+  filteredPictures = pictures.slice(0);
 
   switch (id) {
     case 'filter-new':
@@ -132,12 +161,13 @@ function setActiveFilter(id) {
       filteredPictures = pictures;
       break;
   }
+  currentPage = 0;
+  renderPictures(filteredPictures, currentPage, true);
+  renderNewPages();
+
   firstFiltration = false;
   activeFilter = id;
-  renderPictures(filteredPictures);
-
 }
-
 function isOlderThanMonths(img, monthCount) {
   var now = new Date();
   var milisecondsInMonths = monthCount * 30 * 24 * 60 * 60 * 1000;
