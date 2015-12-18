@@ -8,6 +8,7 @@ var filtersContainer = document.querySelector('.filters');
 filtersContainer.classList.add('hidden');
 var pictures = [];
 var firstFiltration = true;
+var lastMonths = 6;
 
 //Загружаем данные из файла и создаем блоки с фотографиями
 getPicturesData();
@@ -115,7 +116,9 @@ function setActiveFilter(id) {
 
   switch (id) {
     case 'filter-new':
-      filteredPictures = filteredPictures.filter(isOlderThanMonths);
+      filteredPictures = filteredPictures.filter(function(image) {
+        return isOlderThanMonths(image, lastMonths);
+      });
       filteredPictures = filteredPictures.sort(function(a, b) {
         return b.date - a.date;
       });
@@ -135,10 +138,10 @@ function setActiveFilter(id) {
 
 }
 
-function isOlderThanMonths(img) {
+function isOlderThanMonths(img, monthCount) {
   var now = new Date();
-  var MILISECONDS_IN_SIX_MONTHS = 6 * 30 * 24 * 60 * 60 * 1000;
-  var dateSixMonthEarlier = new Date(now - MILISECONDS_IN_SIX_MONTHS);
+  var milisecondsInMonths = monthCount * 30 * 24 * 60 * 60 * 1000;
+  var dateSixMonthEarlier = new Date(now - milisecondsInMonths);
   var pictureDate = new Date(img.date);
 
   return dateSixMonthEarlier < pictureDate;
