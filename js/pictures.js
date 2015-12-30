@@ -1,3 +1,4 @@
+/* global Photo: true, Gallery: true */
 'use strict';
 
 // Находим контейнер для изображений
@@ -11,6 +12,7 @@ var currentPage = 0;
 var PAGE_SIZE = 12;
 var filteredPictures = [];
 var scrollTimeout;
+var gallery = new Gallery();
 
 // Прячем блок с фильтрами
 filtersContainer.classList.add('hidden');
@@ -83,8 +85,13 @@ function renderPictures(picturesToRender, pageNumber, replace) {
   var pagePictures = picturesToRender.slice(from, to);
 
   pagePictures.forEach(function(picture) {
-    var element = getElementFromTemplate(picture);
-    fragment.appendChild(element);
+    var pictureElement = new Photo(picture);
+    pictureElement.render();
+    fragment.appendChild(pictureElement.element);
+
+    pictureElement.element.addEventListener('click', _onPhotoClick);
+    window.addEventListener('keydown', _onDocumentKeyDown);
+    console.log(gallery);
   });
   pictureContainer.appendChild(fragment);
 
@@ -94,44 +101,25 @@ function renderPictures(picturesToRender, pageNumber, replace) {
   }
 }
 
-// Получаем шаблон
-function getElementFromTemplate(data) {
-  var template = document.getElementById('picture-template');
-  var element;
-  var image;
-
-  // Проверяем, поддерживается ли браузером свойство content
-  if ('content' in template) {
-    element = template.content.children[0].cloneNode(true);
-  } else {
-    element = template.children[0].cloneNode(true);
-  }
-
-  // Создаем изображение, заменяем им уже находящееся в шаблоне
-  var photo = new Image(182, 182);
-  photo.src = data.url;
-  image = element.querySelector('img');
-  element.replaceChild(photo, image);
-
-  var imageLoadTimeout = setTimeout(function() {
-    element.classList.add('picture-load-failure');
-  }, 1000);
-
-  // Обработчик загрузки:
-  photo.onload = function() {
-    clearTimeout(imageLoadTimeout);
-  };
-  // Обработчик ошибки:
-  photo.onerror = function() {
-    element.classList.add('picture-load-failure');
-  };
-
-  // Добавляем количество лайков и комментариев
-  element.querySelector('.picture-comments').textContent = data.comments;
-  element.querySelector('.picture-likes').textContent = data.likes;
-
-  return element;
+/**
+* @param {Event} evt
+*/
+function _onPhotoClick(evt) {
+  evt.preventDefault();
+  gallery.show();
 }
+
+/**
+* @param {Event} evt
+*/
+function _onDocumentKeyDown(evt) {
+  if (evt.keyCode === 27) {
+    console.log('keydown!');
+    gallery.hide();
+  }
+}
+
+// Получаем шаблон
 
 function setActiveFilter(id) {
   //Предотвращение повторной установки одного и того же фильтра

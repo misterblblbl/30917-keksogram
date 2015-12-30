@@ -143,7 +143,8 @@
    * и показывается форма кадрирования.
    * @param {Event} evt
    */
-  uploadForm.onchange = function(evt) {
+
+  uploadForm.addEventListener('change', function(evt) {
     var element = evt.target;
     if (element.id === 'upload-file') {
       // Проверка типа загружаемого файла, тип должен быть изображением
@@ -173,14 +174,13 @@
         showMessage(Action.ERROR);
       }
     }
-  };
-
+  });
   /**
    * Обработка сброса формы кадрирования. Возвращает в начальное состояние
    * и обновляет фон.
    * @param {Event} evt
    */
-  resizeForm.onreset = function(evt) {
+  resizeForm.addEventListener('reset', function(evt) {
     evt.preventDefault();
 
     cleanupResizer();
@@ -188,12 +188,13 @@
 
     resizeForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
-  };
+  });
 
-  resizeForm.onchange = function() {
+  resizeForm.addEventListener('change', function() {
     var textField = document.querySelectorAll('.upload-resize-controls input');
     if (resizeFormIsValid()) {
       resizeSubmit.disabled = false;
+      deleteErrorMessage();
       for (var i = 0; i < textField.length; i++) {
         textField[i].classList.remove('input-error');
       }
@@ -204,14 +205,23 @@
         textField[j].classList.add('input-error');
       }
     }
-
-  };
+  });
+  var showed = false;
+  var errorSpan;
 
   function showError(message) {
-    var errorSpan = document.createElement('span');
+    errorSpan = document.createElement('span');
     errorSpan.innerHTML = message;
     errorSpan.setAttribute('style', 'position: absolute; bottom: 60px; left: 10px; color: red');
     resizeForm.appendChild(errorSpan);
+    showed = true;
+  }
+
+  function deleteErrorMessage() {
+    if (showed) {
+      resizeForm.removeChild(errorSpan);
+      showed = false;
+    }
   }
 
   /**
@@ -220,7 +230,7 @@
    * @param {Event} evt
    */
 
-  resizeForm.onsubmit = function(evt) {
+  resizeForm.addEventListener('submit', function(evt) {
     evt.preventDefault();
 
     if (resizeFormIsValid()) {
@@ -229,18 +239,19 @@
       resizeForm.classList.add('invisible');
       filterForm.classList.remove('invisible');
     }
-  };
+  });
 
   /**
    * Сброс формы фильтра. Показывает форму кадрирования.
    * @param {Event} evt
    */
-  filterForm.onreset = function(evt) {
+  filterForm.addEventListener('reset', function(evt) {
     evt.preventDefault();
 
     filterForm.classList.add('invisible');
     resizeForm.classList.remove('invisible');
-  };
+  });
+
   function getCookieExpirationDate() {
     var now = new Date();
     var thisYear = now.getFullYear();
@@ -264,7 +275,7 @@
    * записав сохраненный фильтр в cookie.
    * @param {Event} evt
    */
-  filterForm.onsubmit = function(evt) {
+  filterForm.addEventListener('submit', function(evt) {
     evt.preventDefault();
 
     cleanupResizer();
@@ -273,13 +284,13 @@
     filterForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
     docCookies.setItem('filter', filterImage.className.split(' ')[1], getCookieExpirationDate());
-  };
+  });
 
   /**
    * Обработчик изменения фильтра. Добавляет класс из filterMap соответствующий
    * выбранному значению в форме.
    */
-  filterForm.onchange = function() {
+  filterForm.addEventListener('change', function() {
     if (!filterMap) {
       // Ленивая инициализация. Объект не создается до тех пор, пока
       // не понадобится прочитать его в первый раз, а после этого запоминается
@@ -290,7 +301,6 @@
         'sepia': 'filter-sepia'
       };
     }
-
     var selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
       return item.checked;
     })[0].value;
@@ -299,7 +309,7 @@
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
     // состояние или просто перезаписывать.
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
-  };
+  });
 
   function getPreviousFilter() {
     var previousFilter = docCookies.getItem('filter');
@@ -311,6 +321,23 @@
 
   window.addEventListener('load', function() {
     getPreviousFilter();
+  });
+
+  //Обработчик события 'resizerchange',
+  //который берет значения смещения и размера кадра из объекта resizer и добавляет их в форму
+  window.addEventListener('resizerchange', function() {
+    resizeForm.elements.x.value = currentResizer.getConstraint().x;
+    resizeForm.elements.y.value = currentResizer.getConstraint().y;
+    resizeForm.elements.size.value = currentResizer.getConstraint().side;
+  });
+
+  //обработчик изменения полей формы. При изменении значений в форме, обновляется объект resizer
+  resizeForm.addEventListener('change', function() {
+    var a = +resizeForm.elements.x.value;
+    var b = +resizeForm.elements.y.value;
+    var c = +resizeForm.elements.size.value;
+
+    currentResizer.setConstraint(a, b, c);
   });
 
   cleanupResizer();
