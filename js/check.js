@@ -1,5 +1,14 @@
-/* getMessage(a:*, b:*=):string; */
+/**
+* @fileoverview
+* @author Alexandra Godun
+*/
 
+/**
+* Выводит сообщение в зависимости от типа файла и его характеристик
+* @param {number}
+* @param {number}
+* @return {string}
+*/
 function getMessage(a, b) {
     if (typeof a == 'boolean') {
         if (a) {
@@ -20,6 +29,11 @@ function getMessage(a, b) {
     }
 };
 
+/**
+* Суммирует значения внутри массива
+* @param {array}
+* @return {number}
+*/
 function arraySum(array) {
     var sum = 0;
     for (var i = 0; i < array.length; i++) {
@@ -28,6 +42,12 @@ function arraySum(array) {
     return sum;
 };
 
+/**
+* Перемножает между собой значения внутри массива1 и массива2
+* @param {array} array1
+* @param {array} array2
+* @return {number}
+*/
 function arrayMultiple(array1, array2) {
     var product = 0;
     for (var i = 0; i < array1.length; i++) {

@@ -1,3 +1,8 @@
+/**
+* @fileoverview
+* @author Alexandra Godun
+*/
+
 'use strict';
 
 (function() {

@@ -1,22 +1,81 @@
+/**
+* @fileoverview
+* @author Alexandra Godun
+*/
+
 /* global Photo: true, Gallery: true */
 'use strict';
 
-// Находим контейнер для изображений
+/**
+* Контейнер для картинок
+* @type {Element}
+*/
 var pictureContainer = document.querySelector('.pictures');
+
+/**
+* Блок с фильтрами
+* @type {Element}
+*/
 var filtersContainer = document.querySelector('.filters');
+
+/**
+* @type {Array}
+*/
 var pictures = [];
+
+/**
+* @type {string}
+*/
 var currentFilter = 'filter-all';
+
+/**
+* @type {boolean}
+*/
 var firstFiltration = true;
+
+/**
+* @type {number}
+*/
 var lastMonths = 6;
+
+/**
+* @type {number}
+*/
 var currentPage = 0;
+
+/**
+* @const {number}
+*/
 var PAGE_SIZE = 12;
+
+/**
+* @type {Array}
+*/
 var filteredPictures = [];
+
+/**
+*@type {Array}
+*/
+var renderedElements = [];
+
+/**
+* Таймаут тротлинга в обработчике скролла.
+* @type {number}
+*/
 var scrollTimeout;
+
+/**
+* Создание галереи
+* @type {Gallery}
+*/
 var gallery = new Gallery();
 
 // Прячем блок с фильтрами
 filtersContainer.classList.add('hidden');
 
+/**
+* Показывает фотографии на текущей странице
+*/
 function renderNewPages() {
   //получаем размер и координаты контейнера
   var containerCoordinates = pictureContainer.getBoundingClientRect();
@@ -28,7 +87,7 @@ function renderNewPages() {
     }
   }
 }
-
+// Подгрузить фото при скроле
 window.addEventListener('scroll', function() {
   clearTimeout(scrollTimeout);
   scrollTimeout = setTimeout(renderNewPages(), 100);
@@ -37,6 +96,9 @@ window.addEventListener('scroll', function() {
 //Загружаем данные из файла и создаем блоки с фотографиями
 getPicturesData();
 
+/**
+* @type {string}
+*/
 var activeFilter = 'filter-popular';
 
 filtersContainer.addEventListener('click', function(evt) {
@@ -46,7 +108,11 @@ filtersContainer.addEventListener('click', function(evt) {
   }
 });
 
-//Загружаем данные из файла data/pictures.json с помощью XMLHttpRequest
+/**
+* Загружаем данные из файла data/pictures.json с помощью XMLHttpRequest
+* @param {Function} callback Обработчик асинхронного получения фотографий
+* @callback callback(Array)
+*/
 function getPicturesData() {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', 'data/pictures.json');
@@ -55,6 +121,9 @@ function getPicturesData() {
   //отобразить прелоудер на время загрузки файлв
   pictureContainer.classList.add('pictures-loading');
 
+  /**
+  * @param {Event}
+  */
   xhr.onload = function(evt) {
     var rawData = evt.target.response;
     var loadedData = JSON.parse(rawData);
@@ -74,39 +143,44 @@ function getPicturesData() {
   xhr.send();
 }
 
-// Добавляем полученные из шаблона блоки с изображениями в контейнер
+/**
+* Добавляем полученные из шаблона блоки с изображениями в контейнер
+* @param {Array}
+* @param {number}
+*/
 function renderPictures(picturesToRender, pageNumber, replace) {
   if (replace) {
-    pictureContainer.innerHTML = '';
+    var el;
+    while ((el = renderedElements.shift())) {
+      pictureContainer.removeChild(el.element);
+      el.onClick = null;
+      el.hide();
+    }
   }
   var fragment = document.createDocumentFragment();
   var from = pageNumber * PAGE_SIZE;
   var to = from + PAGE_SIZE;
   var pagePictures = picturesToRender.slice(from, to);
 
-  pagePictures.forEach(function(picture) {
+  renderedElements = renderedElements.concat(pagePictures.map
+    (function(picture) { 
     var pictureElement = new Photo(picture);
     pictureElement.render();
     fragment.appendChild(pictureElement.element);
 
-    pictureElement.element.addEventListener('click', _onPhotoClick);
+    pictureElement.onClick = function() {
+      gallery.data = pictureElement._data;
+      gallery.show();
+    };
     window.addEventListener('keydown', _onDocumentKeyDown);
-    console.log(gallery);
-  });
+    return pictureElement;
+  }));
   pictureContainer.appendChild(fragment);
 
   if (filtersContainer.classList.contains('hidden')) {
     // Показываем блок с фильтрами после того, как получили блоки с изображениями
     filtersContainer.classList.remove('hidden');
   }
-}
-
-/**
-* @param {Event} evt
-*/
-function _onPhotoClick(evt) {
-  evt.preventDefault();
-  gallery.show();
 }
 
 /**
@@ -120,7 +194,10 @@ function _onDocumentKeyDown(evt) {
 }
 
 // Получаем шаблон
-
+/**
+* @param {string} filterId
+* @returns {Array}
+*/
 function setActiveFilter(id) {
   //Предотвращение повторной установки одного и того же фильтра
   if (firstFiltration) {
@@ -156,6 +233,12 @@ function setActiveFilter(id) {
   firstFiltration = false;
   activeFilter = id;
 }
+
+/**
+* Проверяем, что изображение создано не более 3-x месяцев назад.
+* @param {img}
+* @returns {boolean}
+*/
 function isOlderThanMonths(img, monthCount) {
   var now = new Date();
   var milisecondsInMonths = monthCount * 30 * 24 * 60 * 60 * 1000;
