@@ -162,14 +162,14 @@ function renderPictures(picturesToRender, pageNumber, replace) {
   var to = from + PAGE_SIZE;
   var pagePictures = picturesToRender.slice(from, to);
 
-  renderedElements = renderedElements.concat(pagePictures.map
-    (function(picture) { 
+  renderedElements = renderedElements.concat(pagePictures.map(function(picture, index) {
     var pictureElement = new Photo(picture);
     pictureElement.render();
     fragment.appendChild(pictureElement.element);
 
     pictureElement.onClick = function() {
       gallery.data = pictureElement._data;
+      gallery.setCurrentPicture(index + PAGE_SIZE * pageNumber);
       gallery.show();
     };
     window.addEventListener('keydown', _onDocumentKeyDown);
@@ -227,6 +227,7 @@ function setActiveFilter(id) {
       break;
   }
   currentPage = 0;
+  gallery.setPictures(filteredPictures);
   renderPictures(filteredPictures, currentPage, true);
   renderNewPages();
 
