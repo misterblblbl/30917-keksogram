@@ -26,12 +26,7 @@ var pictures = [];
 /**
 * @type {string}
 */
-var currentFilter = 'filter-all';
-
-/**
-* @type {boolean}
-*/
-var firstFiltration = true;
+var activeFilter = localStorage.getItem('activeFilter') || 'filter-popular';
 
 /**
 * @type {number}
@@ -96,10 +91,6 @@ window.addEventListener('scroll', function() {
 //Загружаем данные из файла и создаем блоки с фотографиями
 getPicturesData();
 
-/**
-* @type {string}
-*/
-var activeFilter = 'filter-popular';
 
 filtersContainer.addEventListener('click', function(evt) {
   var clickedFilter = evt.target;
@@ -128,7 +119,7 @@ function getPicturesData() {
     var rawData = evt.target.response;
     var loadedData = JSON.parse(rawData);
     pictures = loadedData;
-    setActiveFilter(currentFilter);
+    setActiveFilter(activeFilter, true);
     //renderPictures(loadedData);
     //убрать прелоудер, когда файлы загрузятся
     pictureContainer.classList.remove('pictures-loading');
@@ -196,14 +187,13 @@ function _onDocumentKeyDown(evt) {
 // Получаем шаблон
 /**
 * @param {string} filterId
+* @param {boolean} force [Флаг на игнорирование проверки]
 * @returns {Array}
 */
-function setActiveFilter(id) {
+function setActiveFilter(id, force) {
   //Предотвращение повторной установки одного и того же фильтра
-  if (firstFiltration) {
-    if (activeFilter === id) {
-      return;
-    }
+  if (activeFilter === id && !force) {
+    return;
   }
 
   filteredPictures = pictures.slice(0);
@@ -231,8 +221,9 @@ function setActiveFilter(id) {
   renderPictures(filteredPictures, currentPage, true);
   renderNewPages();
 
-  firstFiltration = false;
   activeFilter = id;
+  localStorage.setItem('activeFilter', id);
+  filtersContainer.querySelector('#' + activeFilter).checked = true;
 }
 
 /**
