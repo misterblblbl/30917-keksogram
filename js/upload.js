@@ -7,7 +7,7 @@
 
 'use strict';
 
-(function() {
+define(['resizer'], function(Resizer) {
   /** @enum {string} */
   var FileType = {
     'GIF': '',
@@ -342,4 +342,5 @@
 
   cleanupResizer();
   updateBackground();
-})();
+});
+

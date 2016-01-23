@@ -5,7 +5,7 @@
 
 'use strict';
 
-(function() {
+define([], function() {
   /**
   * Функция-конструктор для галереи
   * @constructor
@@ -112,5 +112,5 @@
   /**
    * Делаем конструктор доступным в глобальной области видимости.
    */
-  window.Gallery = Gallery;
-})();
+  return Gallery;
+});

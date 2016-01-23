@@ -4,7 +4,7 @@
 */
 
 'use strict';
-(function() {
+define([], function() {
   /**
   * Конструктор для объекта фотографии
   * @param {Object} data
@@ -41,7 +41,6 @@
     * @type {number}
     */
     var IMAGE_TIMEOUT = 10000;
-
     // Создаем изображение, заменяем им уже находящееся в шаблоне
     /**
     * @type {Image}
@@ -52,8 +51,8 @@
     this.element.replaceChild(photo, image);
 
     var imageLoadTimeout = setTimeout(function() {
-      this.element.classList.add('picture-load-failure');
-    }.bind(this), IMAGE_TIMEOUT);
+    this.element.classList.add('picture-load-failure');
+      }.bind(this), IMAGE_TIMEOUT);
 
     // Обработчик загрузки:
     photo.onload = function() {
@@ -96,5 +95,5 @@
   /**
    * Делаем констуктор доступным в глобальной области видимости.
    */
-  window.Photo = Photo;
-})();
+  return Photo;
+});
