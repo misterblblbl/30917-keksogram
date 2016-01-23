@@ -54,6 +54,7 @@
 
     this._closeButton.addEventListener('click', function() {
       this.hide();
+      location.hash = '';
     }.bind(this));
   };
 

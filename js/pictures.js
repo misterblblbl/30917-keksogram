@@ -123,6 +123,7 @@ function getPicturesData() {
     //renderPictures(loadedData);
     //убрать прелоудер, когда файлы загрузятся
     pictureContainer.classList.remove('pictures-loading');
+    toggleGallery();
   };
   xhr.timeout = 10000;
   xhr.onerror = function() {
@@ -159,6 +160,7 @@ function renderPictures(picturesToRender, pageNumber, replace) {
     fragment.appendChild(pictureElement.element);
 
     pictureElement.onClick = function() {
+      location.hash = location.hash.indexOf('photo') !== -1 ? '' : 'photo/' + pictureElement._data.url;
       gallery.data = pictureElement._data;
       gallery.setCurrentPicture(index + PAGE_SIZE * pageNumber);
       gallery.show();
@@ -179,7 +181,7 @@ function renderPictures(picturesToRender, pageNumber, replace) {
 */
 function _onDocumentKeyDown(evt) {
   if (evt.keyCode === 27) {
-    console.log('keydown!');
+    location.hash = '';
     gallery.hide();
   }
 }
@@ -239,3 +241,18 @@ function isOlderThanMonths(img, monthCount) {
 
   return dateSixMonthEarlier < pictureDate;
 }
+
+function toggleGallery() {
+  var matchedHash = location.hash.match(/#photo\/(\S+)/);
+  if (Array.isArray(matchedHash)) {
+    gallery.setCurrentPicture(matchedHash[1]);
+    gallery.show();
+  } else {
+    gallery.hide();
+  }
+}
+
+window.addEventListener('hashchange', function() {
+  toggleGallery();
+});
+
